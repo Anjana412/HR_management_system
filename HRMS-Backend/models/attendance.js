@@ -1,4 +1,3 @@
-// models/Attendance.js
 import mongoose from "mongoose";
 
 const attendanceSchema = new mongoose.Schema({
@@ -7,9 +6,8 @@ const attendanceSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-  // We store the calendar date as a string for easy "Today" lookups
   date: {
-    type: String, // e.g., "2024-05-20"
+    type: String,
     required: true
   },
   checkIn: {
@@ -23,10 +21,20 @@ const attendanceSchema = new mongoose.Schema({
     type: String,
     enum: ["present", "absent"],
     default: "present"
-  }
+  },
+
+  // ── Breaks ───────────────────────────────────────────────
+  breaks: [
+    {
+      type:      { type: String, enum: ["lunch", "tea"], required: true },
+      startTime: { type: Date, required: true },
+      endTime:   { type: Date },
+      duration:  { type: Number, default: 0 }, // in minutes
+    }
+  ],
+
 }, { timestamps: true });
 
-// CRITICAL: This ensures one employee can only have ONE record per calendar date
 attendanceSchema.index({ employee: 1, date: 1 }, { unique: true });
 
 export default mongoose.model("Attendance", attendanceSchema);
